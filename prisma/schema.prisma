@@ -8,53 +8,62 @@ datasource db {
 }
 
 model aluno {
-  id        Int    @id @default(autoincrement())
-  matricula Int    @unique
-  nome      String @db.VarChar(100)
-  sobrenome String @db.VarChar(100)
-  email     String @unique @db.VarChar(100)
-  genero    String @db.VarChar(50)
-  cursoid   Int
-  curso     curso  @relation(fields: [cursoid], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "curso_fk_id")
+  id              Int               @id @default(autoincrement())
+  matricula       Int               @unique
+  nome            String            @db.VarChar(100)
+  sobrenome       String            @db.VarChar(100)
+  email           String            @unique @db.VarChar(100)
+  foto            String?           @db.VarChar(250)
+  genero          String            @db.VarChar(50)
+  cursoid         Int
+  curso           curso             @relation(fields: [cursoid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "curso_fk_id")
+  disciplinaaluno disciplinaaluno[]
 }
 
 model curso {
-  id                                       Int          @id @default(autoincrement())
-  nome                                     String       @unique @db.VarChar(100)
-  area                                     String       @db.VarChar(50)
-  duracao                                  Int
-  aluno                                    aluno[]
-  disciplina_cursoTodisciplina_cursoid     disciplina[] @relation("cursoTodisciplina_cursoid")
-  disciplina_cursoTodisciplina_professorid disciplina[] @relation("cursoTodisciplina_professorid")
-  disciplina_cursoTodisciplina_semestreid  disciplina[] @relation("cursoTodisciplina_semestreid")
-  professor                                professor[]
-  semestre                                 semestre[]
+  id        Int         @id @default(autoincrement())
+  nome      String      @unique @db.VarChar(100)
+  area      String      @db.VarChar(80)
+  duracao   Int
+  aluno     aluno[]
+  professor professor[]
+  semestre  semestre[]
 }
 
 model disciplina {
-  id                                  Int    @id @default(autoincrement())
-  nome                                String @unique @db.VarChar(100)
-  ch                                  Int
-  professorid                         Int
-  cursoid                             Int
-  semestreid                          Int
-  curso_cursoTodisciplina_cursoid     curso  @relation("cursoTodisciplina_cursoid", fields: [cursoid], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "curso_fk_id")
-  curso_cursoTodisciplina_professorid curso  @relation("cursoTodisciplina_professorid", fields: [professorid], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "professor_fk_id")
-  curso_cursoTodisciplina_semestreid  curso  @relation("cursoTodisciplina_semestreid", fields: [semestreid], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "semestre_fk_id")
+  id              Int               @id @default(autoincrement())
+  nome            String            @unique @db.VarChar(100)
+  ch              Int
+  professorid     Int
+  semestreid      Int
+  professor       professor         @relation(fields: [professorid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "professor_fk_id")
+  semestre        semestre          @relation(fields: [semestreid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "semestre_fk_id")
+  disciplinaaluno disciplinaaluno[]
+}
+
+model disciplinaaluno {
+  id           Int        @id @default(autoincrement())
+  disciplinaid Int
+  alunoid      Int
+  aluno        aluno      @relation(fields: [alunoid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "aluno_fk_id")
+  disciplina   disciplina @relation(fields: [disciplinaid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "disciplina_fk_id")
 }
 
 model professor {
-  id       Int    @default(autoincrement())
-  nome     String @db.VarChar(100)
-  idade    Int
-  email    String @unique @db.VarChar(100)
-  formacao String @db.VarChar(100)
-  cursoid  Int
-  curso    curso  @relation(fields: [cursoid], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "curso_fk_id")
+  id         Int          @id @default(autoincrement())
+  nome       String       @db.VarChar(100)
+  idade      Int
+  email      String       @unique @db.VarChar(100)
+  foto       String?      @db.VarChar(250)
+  formacao   String       @db.VarChar(100)
+  cursoid    Int
+  curso      curso        @relation(fields: [cursoid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "curso_fk_id")
+  disciplina disciplina[]
 }
 
 model semestre {
-  id      Int   @id @default(autoincrement())
-  cursoid Int
-  curso   curso @relation(fields: [cursoid], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "semestre_fk_id")
+  id         Int          @id @default(autoincrement())
+  cursoid    Int
+  curso      curso        @relation(fields: [cursoid], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "curso_fk_id")
+  disciplina disciplina[]
 }
