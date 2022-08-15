@@ -12,10 +12,10 @@ export default {
   },
 
   async createSemestre(req, res) {
-    const { id_curso } = req.body;
+    const { cursoid } = req.body;
     try {
       const curso = await prisma.curso.findUnique({
-        where: { id: Number(id_curso) },
+        where: { id: Number(cursoid) },
       });
 
       if (!curso) {
@@ -36,40 +36,11 @@ export default {
     }
   },
 
-  // async createSemestre(req, res) {
-  //   try {
-  //     const { id } = req.params;
-  //     const { cursoId } = req.body;
-
-  //     const curso = await prisma.curso.findUnique({
-  //       where: { id: Number(id) },
-  //     });
-
-  //     if (!curso) {
-  //       return res.status(404).json({ message: "Este curso não existe!" });
-  //     }
-
-  //     const semestre = await prisma.semestre.create({
-  //       data: {
-  //         cursoId,
-  //         cursoid: curso.id,
-  //       },
-  //       include: {
-  //         curso: true,
-  //       },
-  //     });
-
-  //     return res.status(200).json(semestre);
-  //   } catch (error) {
-  //     return res.status(400).json({ message: error.message });
-  //   }
-  // },
-
   async updateSemestre(req, res) {
     const { id } = req.params;
-    const { id_curso } = req.body;
+    const { cursoid } = req.body;
     try {
-      const semestre = await prisma.semestre.findUnique({
+      const semestre = await prisma.semestre.findFirst({
         where: { id: Number(id) },
       });
 
@@ -77,9 +48,11 @@ export default {
         return res.status(404).json({ message: "Este semestre não existe!" });
       }
 
-      await prisma.semestre.update({
+      semestre = await prisma.semestre.update({
         where: { id: Number(id) },
-        data: { id_curso },
+        data: {
+          cursoid,
+        },
       });
 
       return res.status(200).json({ message: "Curso editado com sucesso!" });
